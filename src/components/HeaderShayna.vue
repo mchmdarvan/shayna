@@ -30,38 +30,35 @@
 								Keranjang Belanja &nbsp;
 								<a href="#">
 									<i class="icon_bag_alt"></i>
-									<span>3</span>
+									<span>{{ cartUser.length }}</span>
 								</a>
 								<div class="cart-hover">
 									<div class="select-items">
 										<table>
-											<tbody>
-												<tr>
+											<tbody v-if="cartUser.length > 0">
+												<tr v-for="cart in cartUser" :key="cart.id">
 													<td class="si-pic">
-														<img src="img/select-product-1.jpg" alt="" />
+														<img
+															class="photo-item"
+															v-bind:src="cart.photo"
+															alt=""
+														/>
 													</td>
 													<td class="si-text">
 														<div class="product-selected">
-															<p>$60.00 x 1</p>
-															<h6>Kabino Bedside Table</h6>
+															<p>${{ cart.price }} x 1</p>
+															<h6>{{ cart.name }}</h6>
 														</div>
 													</td>
-													<td class="si-close">
+													<td @click="removeItem(cart.index)" class="si-close">
 														<i class="ti-close"></i>
 													</td>
 												</tr>
+											</tbody>
+											<tbody v-else>
 												<tr>
-													<td class="si-pic">
-														<img src="img/select-product-2.jpg" alt="" />
-													</td>
-													<td class="si-text">
-														<div class="product-selected">
-															<p>$60.00 x 1</p>
-															<h6>Kabino Bedside Table</h6>
-														</div>
-													</td>
-													<td class="si-close">
-														<i class="ti-close"></i>
+													<td class="text-center">
+														Keranjang Kosong
 													</td>
 												</tr>
 											</tbody>
@@ -89,5 +86,33 @@
 <script>
 export default {
 	name: "HeaderShayna",
+	data() {
+		return {
+			cartUser: [],
+		};
+	},
+	methods: {
+		removeItem(index) {
+			this.cartUser.splice(index);
+			const parsed = JSON.stringify(this.cartUser);
+			localStorage.setItem("cartUser", parsed);
+		},
+	},
+	mounted() {
+		if (localStorage.getItem("cartUser")) {
+			try {
+				this.cartUser = JSON.parse(localStorage.getItem("cartUser"));
+			} catch (e) {
+				localStorage.removeItem("cartUser");
+			}
+		}
+	},
 };
 </script>
+
+<style scoped>
+.photo-item {
+	width: 80px;
+	height: 80px;
+}
+</style>
